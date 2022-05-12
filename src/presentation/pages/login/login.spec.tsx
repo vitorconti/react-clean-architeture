@@ -1,21 +1,40 @@
 import React from 'react'
-import { render, RenderResult } from '@testing-library/react'
+import {
+    cleanup,
+    fireEvent,
+    render,
+    RenderResult
+} from '@testing-library/react'
 import Login from './login'
+import { Validation } from '@/presentation/protocols/validations'
 
 type SutTypes = {
     sut: RenderResult
+    validationSpy: ValidationSpy
+}
+
+class ValidationSpy implements Validation {
+    errorMessage: string
+    input: object
+    validate(input: object): string {
+        this.input = input
+        return this.errorMessage
+    }
 }
 
 const makeSut = (): SutTypes => {
-    const sut = render(<Login />)
+    const validationSpy = new ValidationSpy()
+    const sut = render(<Login validation={validationSpy} />)
     return {
-        sut
+        sut,
+        validationSpy
     }
 }
 
 describe('Login Component', () => {
+    afterEach(cleanup)
     test('Should start with initial state', () => {
-        const { sut } = render(<Login />)
+        const { sut } = makeSut()
         const errorWrap = sut.getByTestId('error-wrap')
         expect(errorWrap.childElementCount).toBe(0)
         const submitButton = sut.getByTestId('submit') as HTMLButtonElement
@@ -26,5 +45,27 @@ describe('Login Component', () => {
         const passwordStatus = sut.getByTestId('password-status')
         expect(passwordStatus.title).toBe('Campo obrigatório')
         expect(passwordStatus.textContent).toBe('🔴')
+    })
+    test('Should call Validation with correct values', () => {
+        const { sut, validationSpy } = makeSut()
+        const emailInput = sut.getByTestId('email')
+        fireEvent.input(emailInput, {
+            target: {
+                value: 'any_email'
+            }
+        })
+    })
+
+    test('Should call Validation with correct values', () => {
+        const { sut, validationSpy } = makeSut()
+        const passwordInput = sut.getByTestId('password')
+        fireEvent.input(passwordInput, {
+            target: {
+                value: 'any_password'
+            }
+        })
+        expect(validationSpy.input).toEqual({
+            password: 'any_password'
+        })
     })
 })
