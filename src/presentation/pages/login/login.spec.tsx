@@ -166,12 +166,15 @@ describe('Login Component', () => {
             Promise.reject(error)
         )
         simulateValidSubmit(sut)
-        const errorWrap = sut.getByTestId('error-wrap')
-        await waitFor(() => errorWrap)
-        await sleep(1000)
-        const mainError = sut.getByTestId('main-error')
-        expect(mainError.textContent).toBe(error.message)
-        expect(errorWrap.childElementCount).toBe(1)
+        await waitFor(async () => {
+            const errorWrap = sut.getByTestId('error-wrap')
+
+            const mainError = await sut.getByTestId('main-error')
+
+            expect(errorWrap.childElementCount).toBe(1)
+
+            expect(mainError.textContent).toBe(error.message)
+        })
     })
     test('Should add accessToken to localstorage on success', async () => {
         const { sut, authenticationSpy } = makeSut()
