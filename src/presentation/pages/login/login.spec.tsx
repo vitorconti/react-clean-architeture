@@ -26,7 +26,7 @@ const makeSut = (params?: SutParams): SutTypes => {
     const authenticationSpy = new AuthenticationSpy()
     validationStub.errorMessage = params?.validationError
     const sut = render(
-        <Router location={history.location} navigator={history}>
+        <Router history={history}>
             <Login
                 validation={validationStub}
                 authentication={authenticationSpy}
@@ -185,13 +185,14 @@ describe('Login Component', () => {
             'accessToken',
             authenticationSpy.account.accessToken
         )
-        expect(window.history.length).toBe(1)
+        expect(history.length).toBe(1)
         expect(history.location.pathname).toBe('/')
     })
     test('Should go to signup page', () => {
         const { sut } = makeSut()
         const register = sut.getByTestId('signup')
         fireEvent.click(register)
-        expect(history.location.pathname)
+        expect(history.length).toBe(2)
+        expect(history.location.pathname).toBe('/signup')
     })
 })

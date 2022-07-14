@@ -3,6 +3,7 @@ import { BrowserRouter, Switch, Route } from 'react-router-dom'
 import { Login } from '@/presentation/pages'
 const Router: React.FC = () => {
     return (
+        //@ts-ignore
         <BrowserRouter>
             <Switch>
                 <Route path="/login" exact component={Login} />
