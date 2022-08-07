@@ -1,4 +1,3 @@
-import { SetStorage } from "@/data/protocols/http/cache/set-storage";
 import { SetStorageSpy } from "@/data/test/mock-storage";
 import faker from 'faker'
 import { LocalSaveAccessToken } from "./local-save-access-token";
